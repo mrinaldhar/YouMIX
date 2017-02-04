@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  	<title>
+  		YouMIX - by Mrinal Dhar
+  	</title>
+  	<link rel="stylesheet" href="./css/reset.css" />
+  	<link rel="stylesheet" href="./css/animate.css" />
+  <style>
+  @font-face {
+    src: url('./fonts/unity-bold.woff');
+    font-family: unitybold;
+  }
+  @font-face {
+    src: url('./fonts/unity-roman.woff');
+    font-family: unity;
+  }
+  @font-face {
+    src: url("./fonts/gotham.ttf");
+    font-family: gotham;
+  }
+  @font-face {
+    src: url("./fonts/gotham.ttf");
+    font-family: colab;
+  }
+  body, html {
+    font-family: neue;
+    -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4 {
+    font-weight: normal;
+  }
+  .anim {
+    -o-transition:.5s;
+    -ms-transition:.5s;
+    -moz-transition:.5s;
+    -webkit-transition:.5s;
+    transition:.5s;
+  }
+  body {
+    font-family: gotham;
+    padding: 0;
+    margin: 0;
+    background-color: black;
+  }
+  #player {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+    width: 100%;
+    height: 100vh;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  #searchbar {
+
+    background-color: white;
+    border-radius: 3px;
+    outline: none;
+    border: 0px;
+    padding: 10px;
+    font-size: 1.1em;
+    width: 100%;
+    box-shadow: 0 0 20px black;
+    box-sizing: border-box;
+  }
+  #searchbar:focus {
+    background-color: white;
+  }
+  #left_actions {
+    position: fixed;
+    top: 130px;
+    left: 5%;
+    width: 35%;
+  }
+  #right_playlist {
+    position: fixed;
+    top: 130px;
+    right: 5%;
+    width: 35%;
+    border: 2px solid rgba(255,255,255,0.5);
+    background-color: rgba(0,0,0,0.7);
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 5px;
+  }
+  #lyrics {
+    position: fixed;
+    top: 130px;
+    right: 5%;
+    width: 35%;
+    background-color: rgba(0,0,0,0.7);
+    padding: 10px;
+    box-sizing: border-box;
+    display: none;
+  }
+  .l2 {
+    z-index: 2;
+    position: fixed;
+  }
+  #footer {
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    padding: 15px;
+    background-color: black;
+    color: rgba(255,255,255,0.8);
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 0.7em;
+    border-top: 2px solid rgba(255,255,255,0.8);
+  }
+  #footer a {
+    text-decoration: none;
+    color: inherit;
+  }
+  #logo {
+    font-family: unitybold;
+    color: white;
+    font-size: 3em;
+    position: fixed;
+    padding: 30px;
+    text-align: left;
+    box-sizing: border-box;
+    padding-left: 5%;
+    text-shadow: 0 0 20px black;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+  }
+  input {
+    font-family: gotham;
+  }
+  #results {
+    width: 100%;
+    height: 400px;
+    overflow-y: scroll;
+  }
+  #results li {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: white;
+    background-color: rgba(0,0,0,0.7);
+    box-sizing: border-box;
+    width: 100%;
+    cursor: pointer;
+  }
+  #results li:hover {
+    border: 1px solid rgba(255,255,255,0.5);
+  }
+  #playlist {
+    width: 100%;
+    height: 400px;
+    overflow-y: scroll;
+  }
+  #playlist li {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: white;
+    background-color: transparent;
+    box-sizing: border-box;
+    width: 100%;
+    cursor: pointer;
+  }
+  #playlist li:hover {
+    border: 1px solid rgba(255,255,255,0.5);
+  }
+  .thumb {
+    display: inline-block;
+    max-width: 40%;
+    width: 40%;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  .vid_thumb {
+    max-width: 100%;
+    line-height: 25px;
+  }
+  .vid_details {
+    max-width: 60%;
+    line-height: 25px;
+    width: 60%;
+    display: inline-block;
+  }
+  .vid_title {
+    display: block;
+    font-size: 0.9em;
+  }
+  .vid_channel {
+    font-size: 0.7em;
+    margin-top: 5px;
+    color: rgba(255,255,255,0.5);
+    display: block;
+  }
+  .section_heading {
+    width: 100%;
+    display: block;
+    text-align: center;
+    font-size: 1em;
+    color: rgba(255,255,255,0.8);
+    text-transform: uppercase;
+    padding-bottom: 40px;
+    padding-top: 15px;
+  }
+  #lyrics_body {
+    color: rgba(255,255,255,0.5);
+    white-space: pre;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+  }
+  </style>
+  <link rel="icon" type="image/png" href="./img/favico.png" />
+</head>
+  <body>
+    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+    <div id="player"></div>
+    <div id="left_actions" class="l2 actions">
+      <input type="text" id="searchbar" class="anim" placeholder="Search YouTube" />
+      <ul id="results" class="connected">
+
+      </ul>
+    </div>
+    <div id="right_playlist" class="l2 actions">
+      <big class="section_heading">Your playlist</big>
+      <ul id="playlist" class="connected">
+        <li class="video sortable" id="firstItem"><span class="thumb"><img class="vid_thumb" src="#" /></span><span class="vid_details"><span class="vid_title">Drag items here from the search results to create your playlist</span><span class="vid_channel"></span></span></li>
+      </ul>
+    </div>
+    <div id="lyrics" class="l2">
+      <big class="section_heading">LYRICS</big>
+      <div id="lyrics_body">Loading...
+      </div>
+    </div>
+    <div id="footer" class="l2">Designed by <a href="http://mrinaldhar.com/">Mrinal Dhar</a></div>
+    <div id="logo" class="l2">YouMIX</div>
+    <script src="./js/jquery.js"></script>
+    <script src="./js/jqueryui.js"></script>
+    <script src="./js/helper.js"></script>
+    <script>
+    window.playlist = [];
+
+      // 2. This code loads the IFrame Player API code asynchronously.
+      var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // 3. This function creates an <iframe> (and YouTube player)
+      //    after the API code downloads.
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+          controls: 0,
+          autoplay: 1,
+          fs: 0,
+          height: window.height,
+          width: window.width,
+          videoId: 'fczPlmz-Vug',
+          playlist: window.playlist,
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+      }
+
+      // 4. The API will call this function when the video player is ready.
+      function onPlayerReady(event) {
+        // event.target.playVideo();      // REACTIVATE THIS.
+      }
+
+      var done = false;
+      function onPlayerStateChange(event) {
+
+      }
+      function stopVideo() {
+        player.stopVideo();
+      }
+    </script>
+    <script>
+    var timeout = null;
+    window.firstVidLoaded = false;
+$(document).mousemove(function() {
+    clearTimeout(timeout);
+    $('.actions').fadeIn();
+    $('#lyrics').fadeOut();
+    timeout = setTimeout(function() {
+      if (window.firstVidLoaded == true) {
+        $('.actions').fadeOut();
+        $('#lyrics').fadeIn();
+      }
+    }, 5000);
+});
+
+    $(document).ready(function() {
+      // ajaxCall("http://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=15953433", {api_key: "50c871e5376a40fc49158d53ec5caa1c", format: "jsonp", callback: "hi"}, "GET", true, , console.log);
+
+
+      $('#searchbar').keypress(function(e) {
+        if (e.which == 13) {
+          ajaxCall("https://www.googleapis.com/youtube/v3/search", {part: "snippet", q:$('#searchbar').val()}, "GET", true, populateResults);
+        }
+        clearTimeout(timeout);
+        $('.actions').fadeIn();
+        $('#lyrics').fadeOut();
+        timeout = setTimeout(function() {
+          if (window.firstVidLoaded == true) {
+            $('.actions').fadeOut();
+            $('#lyrics').fadeIn();
+          }
+        }, 5000);
+      });
+      $(function() {
+              $("#results, #playlist").sortable({
+                  connectWith: ['.connected']
+              });
+          });
+      $('#playlist').sortable({
+        update: function(event, ui) {
+            var sortedIDs = $( "#playlist" ).sortable( "toArray" );
+            console.log(sortedIDs);
+            if (sortedIDs.length >= 1) {
+              var index = sortedIDs.indexOf("firstItem");
+              console.log(index);
+              if (index > -1) {
+                  sortedIDs.splice(index, 1);
+                  $('#firstItem').fadeOut();
+                  console.log("removed");
+              }
+            }
+            if (sortedIDs.length == 0) {
+              $('#firstItem').fadeIn();
+            }
+            window.playlist = sortedIDs;
+        }
+      });
+    });
+    function populateResults(data) {
+      vids = data["items"];
+      $('#results').html("");
+      $.each(vids, function(index, value) {
+        var curr = '<li class="video sortable" id="'+value["id"]["videoId"]+'"><span class="thumb"><img class="vid_thumb" src="'+value["snippet"]["thumbnails"]["medium"]["url"]+'" /></span><span class="vid_details"><span class="vid_title">'+value["snippet"]["title"]+'</span><span class="vid_channel">by '+value["snippet"]["channelTitle"]+'</span></span></li>';
+        $('#results').append(curr);
+      });
+      $('.video').click(function() {
+        window.firstVidLoaded = true;
+        player.loadVideoById(this.id);
+        console.log($(this).children().find(".vid_title").text());
+        fetch_lyrics($(this).children().find(".vid_title").text());
+      });
+    }
+    function lyricscallback(data) {
+      console.log(data);
+      var this_track_id = data["message"]["body"]["track_list"][0]["track"]["track_id"];
+      console.log(this_track_id);
+      $.ajax({
+        type: "GET",
+        data: {
+            apikey:"50c871e5376a40fc49158d53ec5caa1c",
+            track_id: this_track_id,
+            format:"jsonp",
+            callback:"gotlyrics"
+        },
+        url: "http://api.musixmatch.com/ws/1.1/track.lyrics.get",
+        dataType: "jsonp",
+        jsonpCallback: 'gotlyrics',
+        contentType: 'application/json',
+        success: function(data) {
+        }
+      });
+    }
+    function gotlyrics(data) {
+      var lyrics = data["message"]["body"]["lyrics"]["lyrics_body"];
+      $('#lyrics_body').text(lyrics);
+    }
+    function fetch_lyrics(song_title) {
+      $.ajax({
+        type: "GET",
+        data: {
+            apikey:"50c871e5376a40fc49158d53ec5caa1c",
+            q_track: song_title,
+            format:"jsonp",
+            callback:"lyricscallback"
+        },
+        url: "http://api.musixmatch.com/ws/1.1/track.search",
+        dataType: "jsonp",
+        jsonpCallback: 'lyricscallback',
+        contentType: 'application/json',
+        success: function(data) {
+
+        }
+      });
+    }
+    </script>
+    <script>
+//
+// function getLyrics(){
+//
+// var artistSearch = document.getElementById("artistSearch").value;
+// document.getElementById("lyrics").textContent = "";
+//   $.ajax({
+//     type: "GET",
+//     data: {
+//         apikey:"445d6196c08dc2b7490929f18149d684",
+//         q_artist: artistSearch,
+//         format:"jsonp",
+//         callback:"jsonp_callback"
+//     },
+//     url: "http://api.musixmatch.com/ws/1.1/track.search",
+//     dataType: "jsonp",
+//     jsonpCallback: 'jsonp_callback',
+//     contentType: 'application/json',
+//     success: function(data) {
+//         console.log(data);
+//         console.log(data.message.body.track_list[0].track.album_coverart_350x350)
+//         console.log(data.message.body.track_list[0].track.lyrics_id)
+//         var rand = data.message.body.track_list[Math.floor(Math.random() * data.message.body.track_list.length)];
+//         console.log(rand.track.track_id)
+//         var thisTrack = (rand.track.track_id)
+//         var thisPic = rand.track.album_coverart_350x350;
+//         console.log(thisPic)
+//
+//         var p = document.createElement("p");
+//         p.textContent = thisTrack;
+//         p.id = thisTrack;
+//
+//         var img = document.createElement("img")
+//         img.setAttribute("src",thisPic)
+//
+//         document.getElementById("lyrics").appendChild(p).style.opacity = 0;
+//         document.getElementById("lyrics").appendChild(img);
+//         document.getElementById("ghost").click();
+//
+//     },
+//     error: function(jqXHR, textStatus, errorThrown) {
+//         console.log(jqXHR);
+//         console.log(textStatus);
+//         console.log(errorThrown);
+//     }
+//   });
+//  };
+//
+//
+//  function getLyricsNow(){
+//     var trackId = document.getElementById("lyrics").textContent;
+//     console.log(trackId)
+//   $.ajax({
+//     type: "GET",
+//     data: {
+//         apikey:"445d6196c08dc2b7490929f18149d684",
+//         track_id: trackId,
+//         format:"jsonp",
+//         callback:"jsonp_callback"
+//     },
+//     url: "http://api.musixmatch.com/ws/1.1/track.lyrics.get",
+//     dataType: "jsonp",
+//     jsonpCallback: 'jsonp_callback',
+//     contentType: 'application/json',
+//     success: function(data) {
+//         console.log(data.message.body.lyrics.lyrics_body);
+//       var lyricsBody = data.message.body.lyrics.lyrics_body.split(/\s+/).slice(0,100).join(" ")+ "...";
+//
+//         var j = document.createElement("p")
+//         j.textContent = lyricsBody
+//         document.getElementById("lyrics").appendChild(j)
+//     },
+//     error: function(jqXHR, textStatus, errorThrown) {
+//         console.log(jqXHR);
+//         console.log(textStatus);
+//         console.log(errorThrown);
+//     }
+//   });
+//  };
+ </script>
+ <script src="http://tracking.musixmatch.com/t1.0/AMa6hJCIEzn1v8RuOP"></script>
+  </body>
+</html>
