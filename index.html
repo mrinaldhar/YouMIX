@@ -82,11 +82,9 @@
     top: 130px;
     right: 5%;
     width: 35%;
-    border: 2px solid rgba(255,255,255,0.5);
     background-color: rgba(0,0,0,0.7);
     padding: 10px;
     box-sizing: border-box;
-    border-radius: 5px;
   }
   #lyrics {
     position: fixed;
@@ -228,7 +226,7 @@
     <div id="right_playlist" class="l2 actions">
       <big class="section_heading">Your playlist</big>
       <ul id="playlist" class="connected">
-        <li class="video sortable" id="firstItem"><span class="thumb"><img class="vid_thumb" src="#" /></span><span class="vid_details"><span class="vid_title">Drag items here from the search results to create your playlist</span><span class="vid_channel"></span></span></li>
+        <li class="video sortable" id="firstItem"><span class="thumb"><img class="vid_thumb" src="./img/yt-icon.png" /></span><span class="vid_details"><span class="vid_title">Drag items here from the search results to create your playlist</span><span class="vid_channel"></span></span></li>
       </ul>
     </div>
     <div id="lyrics" class="l2">
@@ -272,7 +270,7 @@
 
       // 4. The API will call this function when the video player is ready.
       function onPlayerReady(event) {
-        // event.target.playVideo();      // REACTIVATE THIS.
+        event.target.playVideo();      // REACTIVATE THIS.
       }
 
       var done = false;
@@ -380,6 +378,7 @@ $(document).mousemove(function() {
       $('#lyrics_body').text(lyrics);
     }
     function fetch_lyrics(song_title) {
+      $('#lyrics_body').text("Loading...");
       $.ajax({
         type: "GET",
         data: {
