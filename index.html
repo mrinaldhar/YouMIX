@@ -129,6 +129,7 @@
     top: 0px;
     left: 0px;
     width: 100%;
+    cursor: pointer;
   }
   input {
     font-family: gotham;
@@ -241,7 +242,7 @@
     <script src="./js/helper.js"></script>
     <script>
     window.playlist = [];
-
+    window.playIndex = 0;
       // 2. This code loads the IFrame Player API code asynchronously.
       var tag = document.createElement('script');
 
@@ -275,13 +276,21 @@
 
       var done = false;
       function onPlayerStateChange(event) {
-
+        if(event.data === 0) {
+          if (window.playIndex > -1) {
+            window.playIndex = window.playIndex + 1;
+            if (window.playlist.length < window.playIndex) {
+              player.loadVideoById(window.playlist[window.playIndex]);
+            }
+          }
+        }
       }
       function stopVideo() {
         player.stopVideo();
       }
     </script>
     <script>
+
     var timeout = null;
     window.firstVidLoaded = false;
 $(document).mousemove(function() {
@@ -299,7 +308,9 @@ $(document).mousemove(function() {
     $(document).ready(function() {
       // ajaxCall("http://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=15953433", {api_key: "50c871e5376a40fc49158d53ec5caa1c", format: "jsonp", callback: "hi"}, "GET", true, , console.log);
 
-
+      $('#logo').click(function() {
+        playpause();
+      });
       $('#searchbar').keypress(function(e) {
         if (e.which == 13) {
           ajaxCall("https://www.googleapis.com/youtube/v3/search", {part: "snippet", q:$('#searchbar').val()}, "GET", true, populateResults);
@@ -349,6 +360,12 @@ $(document).mousemove(function() {
       $('.video').click(function() {
         window.firstVidLoaded = true;
         player.loadVideoById(this.id);
+        if (window.playlist.indexOf(this.id) > -1) {
+          window.playIndex = window.playlist.indexOf(this.id);
+        }
+        else {
+          window.playIndex = -1;
+        }
         console.log($(this).children().find(".vid_title").text());
         fetch_lyrics($(this).children().find(".vid_title").text());
       });
@@ -395,6 +412,28 @@ $(document).mousemove(function() {
 
         }
       });
+    }
+    function playpause(){
+      if (player.getPlayerState() == 1) {
+        player.pauseVideo();
+        blink(true);
+      }
+      else if(player.getPlayerState() == 2) {
+        blink(false);
+        player.playVideo();
+      }
+    }
+    function blink(toggle) {
+      if (toggle == true) {
+        window.blinker = window.setInterval(function() {
+          $('#logo').fadeOut(function() {
+            $('#logo').fadeIn();
+          });
+        });
+      }
+      else {
+        window.clearInterval(window.blinker);
+      }
     }
     </script>
  <script src="http://tracking.musixmatch.com/t1.0/AMa6hJCIEzn1v8RuOP"></script>
